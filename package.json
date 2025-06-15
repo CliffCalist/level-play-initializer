@@ -1,0 +1,11 @@
+{
+    "name": "com.white-arrow.ad-flow",
+    "version": "1.0.0",
+    "displayName": "Ad Flow",
+    "description": "AdFlow – Unity plugin for streamlined ad consent, IDFA, and LevelPlay initialization with rewarded ad support.",
+    "licensesUrl": "https://github.com/CliffCalist/ad-flow/blob/d0b02f71b8c63fd306b7202d4f11e396e271b9f6/LICENSE",
+    "author": {
+        "name": "White Arrow",
+        "email": "cliffstersprog@gmail.com"
+    }
+}
