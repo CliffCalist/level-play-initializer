@@ -2,11 +2,8 @@ using System;
 using System.Threading.Tasks;
 using GoogleMobileAds.Ump.Api;
 using Unity.Services.LevelPlay;
-using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
-
 
 #if UNITY_IOS
 using Unity.Advertisement.IosSupport;
@@ -16,8 +13,8 @@ namespace WhiteArrow.AdFlow
 {
     public static class AdFlow
     {
-        private static IAdTimerView s_timerView;
         private static AdsSettings s_settings;
+        private static IAdTimerView s_timerView;
 
 
 
@@ -141,19 +138,23 @@ namespace WhiteArrow.AdFlow
 
 
 
-        public static void ShowRewardedAdWithTimer()
+        public static void ShowRewardedAdWithTimer(Action<bool> callback)
         {
-            if (!IronSource.Agent.isRewardedVideoAvailable())
-                throw new InvalidOperationException("Rewarded video is not available.");
+            if (!RewardedAdService.IsAvailable)
+            {
+                Debug.LogWarning("[AdFlow] Rewarded video is not available.");
+                callback?.Invoke(false);
+                return;
+            }
 
             var view = GetOrCreateTimerInstance();
 
             if (view == null)
             {
                 Debug.LogWarning($"[AdFlow] {nameof(s_settings.TimerView)} not assigned. Skipping timer.");
-                IronSource.Agent.showRewardedVideo();
+                RewardedAdService.Show(callback);
             }
-            else view.Activate(() => IronSource.Agent.showRewardedVideo());
+            else view.Activate(() => RewardedAdService.Show(callback));
         }
 
         private static IAdTimerView GetOrCreateTimerInstance()
