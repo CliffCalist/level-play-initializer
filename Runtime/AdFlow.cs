@@ -14,6 +14,7 @@ namespace WhiteArrow.AdFlow
     public static class AdFlow
     {
         private static AdsSettings s_settings;
+        private static RewardedAdProvider s_rewardedAd = new();
         private static IAdTimerView s_timerView;
 
 
@@ -140,7 +141,7 @@ namespace WhiteArrow.AdFlow
 
         public static void ShowRewardedAdWithTimer(Action<bool> callback)
         {
-            if (!RewardedAdService.IsAvailable)
+            if (!RewardedAdProvider.IsAvailable)
             {
                 Debug.LogWarning("[AdFlow] Rewarded video is not available.");
                 callback?.Invoke(false);
@@ -152,9 +153,9 @@ namespace WhiteArrow.AdFlow
             if (view == null)
             {
                 Debug.LogWarning($"[AdFlow] {nameof(s_settings.TimerView)} not assigned. Skipping timer.");
-                RewardedAdService.Show(callback);
+                s_rewardedAd.Show(callback);
             }
-            else view.Activate(() => RewardedAdService.Show(callback));
+            else view.Activate(() => s_rewardedAd.Show(callback));
         }
 
         private static IAdTimerView GetOrCreateTimerInstance()
