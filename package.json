@@ -1,8 +1,8 @@
 {
-    "name": "com.white-arrow.ad-flow",
+    "name": "com.white-arrow.level-play-initializer",
     "version": "1.0.0",
-    "displayName": "Ad Flow",
-    "description": "AdFlow – Unity plugin for streamlined ad consent, IDFA, and LevelPlay initialization with rewarded ad support.",
+    "displayName": "LevelPlay Initializer",
+    "description": "Simple Unity utility for initializing LevelPlay ads with UMP consent and IDFA support.",
     "licensesUrl": "https://github.com/CliffCalist/ad-flow/blob/d0b02f71b8c63fd306b7202d4f11e396e271b9f6/LICENSE",
     "author": {
         "name": "White Arrow",
