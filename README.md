@@ -8,7 +8,7 @@ LevelPlay Initializer is a lightweight Unity utility that handles initialization
 - One-call asynchronous initialization
 - Simple configuration via ScriptableObject
 
-## Installation
+## Usage
 1. Create or edit the `AdsSettings` ScriptableObject and place it in a `Resources` folder.
 2. Call the initializer at app start:
 
