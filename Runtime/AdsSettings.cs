@@ -10,6 +10,7 @@ namespace WhiteArrow.LevelPlayInitialization
         [SerializeField] private string _appKeyIOS;
 
         [Header("Consent")]
+        [SerializeField] private bool _consent;
         [SerializeField] private bool _isFamilyDirected;
         [SerializeField] private bool _isChildeDirected;
 
@@ -17,6 +18,7 @@ namespace WhiteArrow.LevelPlayInitialization
 
         public string AppKey => Application.platform == RuntimePlatform.IPhonePlayer ? _appKeyIOS : _appKeyAndroid;
 
+        public bool Consent => _consent;
         public bool IsFamilyDirected => _isFamilyDirected;
         public bool IsChildeDirected => _isFamilyDirected ? true : _isChildeDirected;
     }

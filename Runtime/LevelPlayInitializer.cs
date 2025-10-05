@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using GoogleMobileAds.Ump.Api;
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
@@ -34,41 +33,7 @@ namespace WhiteArrow.LevelPlayInitialization
 
         private static async Task RequestConsentAsync()
         {
-            var isRequestCompleted = false;
-            var request = new ConsentRequestParameters();
-
-            ConsentInformation.Update(request, error =>
-            {
-                if (error != null)
-                {
-                    Debug.LogWarning($"[AdFlow] Consent update failed: {error.Message}");
-                    isRequestCompleted = true;
-                    return;
-                }
-
-                if (ConsentInformation.IsConsentFormAvailable())
-                {
-                    ConsentForm.LoadAndShowConsentFormIfRequired(error =>
-                    {
-                        if (error != null)
-                        {
-                            Debug.LogWarning($"[AdFlow] Consent form load failed: {error.Message}");
-                            isRequestCompleted = true;
-                            return;
-                        }
-
-                        if (ConsentInformation.CanRequestAds())
-                            Debug.Log("[AdFlow] Consent granted.");
-                        else Debug.Log("[AdFlow] Consent denied.");
-
-                        isRequestCompleted = true;
-                    });
-                }
-                else isRequestCompleted = true;
-            });
-
-            while (!isRequestCompleted)
-                await Task.Yield();
+            await Task.CompletedTask;
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -117,7 +82,7 @@ namespace WhiteArrow.LevelPlayInitialization
 
         private static void ApplyPrivacyMetaData()
         {
-            var gdprValue = ConsentInformation.CanRequestAds();
+            var gdprValue = s_settings.Consent;
             LevelPlay.SetConsent(gdprValue);
 
             var ccpaValue = (!gdprValue).ToString().ToLower();
