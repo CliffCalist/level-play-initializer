@@ -14,6 +14,7 @@ namespace WhiteArrow.LevelPlayInitialization
 
 
         private const string SETTINGS_RESOURCE_PATH = "AdsSettings";
+        private const string PRIVACY_CONSENT_CHOICE_SAVE_KEY = "PrivacyConsent";
 
 
 
@@ -26,15 +27,57 @@ namespace WhiteArrow.LevelPlayInitialization
                 return;
             }
 
-            await RequestConsentAsync();
+            if (!IsPrivacyConsentBeenRequested())
+                await RequestPrivacyConsentAsync();
+
             await RequestIDFAAsync();
             await InitializeLevelPlay();
         }
 
-        private static async Task RequestConsentAsync()
+
+
+        private static async Task RequestPrivacyConsentAsync()
         {
-            await Task.CompletedTask;
+            var tcs = new TaskCompletionSource<bool>();
+            var confirmer = Object.Instantiate(s_settings.PrivacyConsentConfirmer);
+            confirmer.Confirm(s_settings.PrivacyPolicyUrl, result => tcs.TrySetResult(result));
+
+            var result = await tcs.Task;
+            SavePrivacyConsent(result);
+            Object.Destroy(confirmer);
         }
+
+        public static void RequestPrivacyConsent()
+        {
+            var confirmer = Object.Instantiate(s_settings.PrivacyConsentConfirmer);
+            confirmer.Confirm(s_settings.PrivacyPolicyUrl, result =>
+            {
+                SavePrivacyConsent(result);
+                Object.Destroy(confirmer);
+            });
+        }
+
+        private static void SavePrivacyConsent(bool consent)
+        {
+            PlayerPrefs.SetString(PRIVACY_CONSENT_CHOICE_SAVE_KEY, consent.ToString());
+            Debug.Log($"[AdFlow] Privacy consent: {consent}");
+        }
+
+        private static bool GetSavedPrivacyConsent()
+        {
+            if (!IsPrivacyConsentBeenRequested())
+                return false;
+
+            var result = PlayerPrefs.GetString(PRIVACY_CONSENT_CHOICE_SAVE_KEY);
+            return result == true.ToString();
+        }
+
+        private static bool IsPrivacyConsentBeenRequested()
+        {
+            return PlayerPrefs.HasKey(PRIVACY_CONSENT_CHOICE_SAVE_KEY);
+        }
+
+
 
         private static async Task RequestIDFAAsync()
         {
@@ -56,9 +99,11 @@ namespace WhiteArrow.LevelPlayInitialization
 #endif
         }
 
+
+
         private static async Task InitializeLevelPlay()
         {
-            ApplyPrivacyMetaData();
+            UpdateAllMetaData();
 
             var tcs = new TaskCompletionSource<bool>();
             var appKey = s_settings.AppKey;
@@ -79,17 +124,32 @@ namespace WhiteArrow.LevelPlayInitialization
             await tcs.Task;
         }
 
-        private static void ApplyPrivacyMetaData()
+
+
+        private static void UpdateAllMetaData()
         {
-            var gdprValue = s_settings.Consent;
+            UpdatePrivacyConsentMetaData();
+            UpdateFamilyMetaData();
+            UpdateChildMetaData();
+        }
+
+        private static void UpdatePrivacyConsentMetaData()
+        {
+            var gdprValue = GetSavedPrivacyConsent();
             LevelPlay.SetConsent(gdprValue);
 
             var ccpaValue = (!gdprValue).ToString().ToLower();
             LevelPlay.SetMetaData("do_not_sell", ccpaValue);
+        }
 
+        private static void UpdateFamilyMetaData()
+        {
             var isFamilyDirected = s_settings.IsFamilyDirected.ToString();
             LevelPlay.SetMetaData("Google_Family_Self_Certified_SDKS", isFamilyDirected);
+        }
 
+        private static void UpdateChildMetaData()
+        {
             var isChildeDirected = s_settings.IsChildeDirected.ToString();
             LevelPlay.SetMetaData("is_deviceid_optout", isChildeDirected);
             LevelPlay.SetMetaData("is_child_directed", isChildeDirected);

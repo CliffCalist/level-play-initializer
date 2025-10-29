@@ -15,7 +15,8 @@ namespace WhiteArrow.LevelPlayInitialization
 #endif
 
         [Header("Consent")]
-        [SerializeField] private bool _consent;
+        [SerializeField] private string _privacyPolicyUrl;
+        [SerializeField] private PrivacyConsentConfirmer _privacyConsentConfirmer;
         [SerializeField] private bool _isFamilyDirected;
         [SerializeField] private bool _isChildeDirected;
 
@@ -35,7 +36,9 @@ namespace WhiteArrow.LevelPlayInitialization
             }
         }
 
-        public bool Consent => _consent;
+
+        public string PrivacyPolicyUrl => _privacyPolicyUrl;
+        public PrivacyConsentConfirmer PrivacyConsentConfirmer => _privacyConsentConfirmer;
         public bool IsFamilyDirected => _isFamilyDirected;
         public bool IsChildeDirected => _isFamilyDirected ? true : _isChildeDirected;
     }
