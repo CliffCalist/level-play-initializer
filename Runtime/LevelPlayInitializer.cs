@@ -18,9 +18,12 @@ namespace WhiteArrow.LevelPlayInitialization
 
 
 
-        public static async Task InitializeAsync()
+        public static async Task InitializeAsync(AdsSettings settings = null)
         {
-            s_settings = Resources.Load<AdsSettings>(SETTINGS_RESOURCE_PATH);
+            if (settings == null)
+                s_settings = Resources.Load<AdsSettings>(SETTINGS_RESOURCE_PATH);
+            else s_settings = settings;
+
             if (s_settings == null)
             {
                 Debug.LogError("[AdFlow] AdsSettings not found in Resources.");
