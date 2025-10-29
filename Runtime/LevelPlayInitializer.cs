@@ -36,9 +36,7 @@ namespace WhiteArrow.LevelPlayInitialization
             await Task.CompletedTask;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private static async Task RequestIDFAAsync()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
 #if UNITY_IOS
             if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() ==
@@ -54,6 +52,7 @@ namespace WhiteArrow.LevelPlayInitialization
             }
 #else
             Debug.Log("[AdFlow] IDFA is not supported on this platform.");
+            await Task.CompletedTask;
 #endif
         }
 
