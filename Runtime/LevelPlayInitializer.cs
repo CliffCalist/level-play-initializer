@@ -11,6 +11,7 @@ namespace WhiteArrow.LevelPlayInitialization
     public static class LevelPlayInitializer
     {
         private static AdsSettings s_settings;
+        private static PrivacyConsentConfirmer s_privacyConsentConfirmer;
 
 
         private const string SETTINGS_RESOURCE_PATH = "AdsSettings";
@@ -42,23 +43,31 @@ namespace WhiteArrow.LevelPlayInitialization
         private static async Task RequestPrivacyConsentAsync()
         {
             var tcs = new TaskCompletionSource<bool>();
-            var confirmer = Object.Instantiate(s_settings.PrivacyConsentConfirmer);
+            var confirmer = GetPrivacyConsentConfirmer();
             confirmer.Confirm(s_settings.PrivacyPolicyUrl, result => tcs.TrySetResult(result));
 
             var result = await tcs.Task;
             SavePrivacyConsent(result);
-            Object.Destroy(confirmer);
         }
 
         public static void RequestPrivacyConsent()
         {
-            var confirmer = Object.Instantiate(s_settings.PrivacyConsentConfirmer);
-            confirmer.Confirm(s_settings.PrivacyPolicyUrl, result =>
-            {
-                SavePrivacyConsent(result);
-                Object.Destroy(confirmer);
-            });
+            var confirmer = GetPrivacyConsentConfirmer();
+            confirmer.Confirm(s_settings.PrivacyPolicyUrl, SavePrivacyConsent);
         }
+
+        private static PrivacyConsentConfirmer GetPrivacyConsentConfirmer()
+        {
+            if (s_privacyConsentConfirmer == null)
+            {
+                s_privacyConsentConfirmer = Object.Instantiate(s_settings.PrivacyConsentConfirmer);
+                Object.DontDestroyOnLoad(s_privacyConsentConfirmer.gameObject);
+            }
+
+            return s_privacyConsentConfirmer;
+        }
+
+
 
         private static void SavePrivacyConsent(bool consent)
         {
