@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.LevelPlay;
 using UnityEngine;
@@ -132,7 +133,7 @@ namespace WhiteArrow.LevelPlayInitialization
                 tcs.TrySetResult(false);
             };
 
-            LevelPlay.Init(appKey);
+            LevelPlay.Init(appKey, adFormats: s_settings.AdFormats.ToArray());
             await tcs.Task;
         }
 
