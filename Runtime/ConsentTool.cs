@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,6 +15,7 @@ namespace WhiteArrow
         private static ConsentConfirmer s_confirmerPrefab;
         private static ConsentConfirmer s_confirmerInstance;
 
+        private static readonly List<IConsentChoiceListener> s_listener = new();
 
 
         public static event Action<bool> ChoiceMade;
@@ -21,6 +23,19 @@ namespace WhiteArrow
 
 
         private const string CONSENT_CHOICE_SAVE_KEY = "consent_choice";
+
+
+
+        public static void AddListener(IConsentChoiceListener listener)
+        {
+            s_listener.Add(listener);
+            listener.OnConsentChoiceChanged(IsConsentConfirmed());
+        }
+
+        public static bool RemoveListener(IConsentChoiceListener listener)
+        {
+            return s_listener.Remove(listener);
+        }
 
 
 
