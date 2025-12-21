@@ -1,10 +1,10 @@
-using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace WhiteArrow
 {
     public abstract class ConsentConfirmer : MonoBehaviour
     {
-        internal protected abstract void Confirm(Action<bool> onCompleted);
+        internal protected abstract Task<bool> Confirm();
     }
 }

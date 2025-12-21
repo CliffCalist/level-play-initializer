@@ -15,10 +15,9 @@ namespace WhiteArrow
         private static ConsentConfirmer s_confirmerPrefab;
         private static ConsentConfirmer s_confirmerInstance;
 
-        private static readonly List<IConsentChoiceListener> s_listener = new();
+        public static bool IsIDFAEnabled = true;
 
-
-        public static event Action<bool> ChoiceMade;
+        private static readonly List<IConsentChoiceListener> s_listeners = new();
 
 
 
@@ -28,18 +27,26 @@ namespace WhiteArrow
 
         public static void AddListener(IConsentChoiceListener listener)
         {
-            s_listener.Add(listener);
+            s_listeners.Add(listener);
             listener.OnConsentChoiceChanged(IsConsentConfirmed());
         }
 
         public static bool RemoveListener(IConsentChoiceListener listener)
         {
-            return s_listener.Remove(listener);
+            return s_listeners.Remove(listener);
+        }
+
+        private static void NotifyListeners()
+        {
+            var isConsentConfirmed = IsConsentConfirmed();
+
+            foreach (var listener in s_listeners)
+                listener.OnConsentChoiceChanged(isConsentConfirmed);
         }
 
 
 
-        public static async Task SetConfirmerPrefab(ConsentConfirmer confirmer)
+        public static void SetConfirmerPrefab(ConsentConfirmer confirmer)
         {
             if (s_confirmerPrefab != null)
                 throw new InvalidOperationException("Confirmer prefab is already set.");
@@ -60,35 +67,34 @@ namespace WhiteArrow
 
 
 
-        public static async Task RequestConsent()
-        {
-            var confirmer = GetConfirmerInstance();
-            confirmer.Confirm(async isConformed =>
-            {
-                if (isConformed)
-                    await RequestIDFAAsync();
-
-                ChoiceMade?.Invoke(isConformed);
-            });
-        }
-
-        public static async Task RequestConsentChoiceIfNeeded()
+        public static async Task RequestConsentIfNeeded()
         {
             if (IsConsentBeenRequested())
                 return;
 
-            var confirmer = GetConfirmerInstance();
-            confirmer.Confirm(async isConformed =>
-            {
-                SaveConsentChoice(isConformed);
+            await RequestConsent();
+        }
 
-                if (isConformed)
-                    await RequestIDFAAsync();
-            });
+        public static async Task RequestConsent()
+        {
+            var confirmer = GetConfirmerInstance();
+            var isConformed = await confirmer.Confirm();
+
+            SaveConsentChoice(isConformed);
+            NotifyListeners();
+
+            if (isConformed)
+                await RequestIDFAAsync();
         }
 
         private static async Task RequestIDFAAsync()
         {
+            if (!IsIDFAEnabled)
+            {
+                Debug.LogWarning("IDFA is disabled.");
+                return;
+            }
+
 #if UNITY_IOS
             if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() ==
                 ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED)
@@ -109,7 +115,7 @@ namespace WhiteArrow
 
 
 
-        private static bool IsConsentBeenRequested()
+        public static bool IsConsentBeenRequested()
         {
             return PlayerPrefs.HasKey(CONSENT_CHOICE_SAVE_KEY);
         }
