@@ -1,10 +1,8 @@
 {
-    "name": "WhiteArrow.LevelPlayInitialization",
-    "rootNamespace": "WhiteArrow.LevelPlayInitialization",
+    "name": "WhiteArrow.ConsentResolving",
+    "rootNamespace": "WhiteArrow.ConsentResolving",
     "references": [
-        "GUID:760a4c7888534400e882b82c5b3fba06",
-        "GUID:00c479e63b1c74419820a39073267645",
-        "GUID:cbb42e4cfd9484f52972c8f05e1c3252"
+        "GUID:00c479e63b1c74419820a39073267645"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
