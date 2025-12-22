@@ -174,7 +174,7 @@ namespace WhiteArrow
         {
             if (s_ageGroupConfirmer == null)
             {
-                if (GetConfig().AgeGroupConfirmer is not Object ageGroupConfirmerPrefab)
+                if (GetConfig().AgeGroupConfirmer is not MonoBehaviour ageGroupConfirmerPrefab)
                     throw new InvalidOperationException($"Age group confirmer prefab is not set or is not an UnityEngine.Object.");
 
                 s_ageGroupConfirmer = (IAgeOver18Confirmer)Object.Instantiate(ageGroupConfirmerPrefab);
@@ -210,7 +210,7 @@ namespace WhiteArrow
         {
             if (s_consentConfirmer == null)
             {
-                if (GetConfig().ConsentConfirmer is not Object consentConfirmerPrefab)
+                if (GetConfig().ConsentConfirmer is not MonoBehaviour consentConfirmerPrefab)
                     throw new InvalidOperationException($"Consent confirmer prefab is not set or is not an UnityEngine.Object.");
 
                 s_consentConfirmer = (IConsentConfirmer)Object.Instantiate(consentConfirmerPrefab);

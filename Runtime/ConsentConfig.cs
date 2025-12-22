@@ -6,6 +6,6 @@ namespace WhiteArrow
         public bool IsChildeDirected;
 
         public IConsentConfirmer ConsentConfirmer;
-        public IConsentConfirmer AgeGroupConfirmer;
+        public IAgeOver18Confirmer AgeGroupConfirmer;
     }
 }
